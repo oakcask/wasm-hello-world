@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "wasm:build": "wasm-pack build --target web --release",
+    "prebuild": "npm run wasm:build",
+    "build": "tsc && vite build",
+    "vite": "npx vite"
+  },
+  "dependencies": {
+    "typescript": "^4.9.3",
+    "vite": "^3.2.4",
+    "vite-tsconfig-paths": "^3.6.0"
+  }
+}
