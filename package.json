@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "prewasm:build": "cargo install wasm-pack",
     "wasm:build": "wasm-pack build --target web --release",
     "prebuild": "npm run wasm:build",
     "build": "tsc && vite build",
