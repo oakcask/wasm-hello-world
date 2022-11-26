@@ -22,13 +22,18 @@ console_error_panic_hook = { version = "0.1.6", optional = true }
 # compared to the default allocator's ~10K. It is slower than the default
 # allocator, however.
 wee_alloc = { version = "0.4.5", optional = true }
+js-sys = { version = "0.3.60" }
 web-sys = { version = "0.3.60", features = [
   'Window',
   'Document',
   'Element',
   'Node',
   'HtmlCanvasElement',
-  'WebGl2RenderingContext'
+  'WebGl2RenderingContext',
+  'WebGlBuffer',
+  'WebGlShader',
+  'WebGlProgram',
+  'WebGlVertexArrayObject'
 ] }
 
 [dev-dependencies]
