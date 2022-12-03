@@ -1,2 +1,2 @@
-pub mod shader;
 pub mod primitive;
+pub mod shader;
