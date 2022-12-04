@@ -1,11 +1,8 @@
 mod gl;
 mod utils;
 
-use gl::primitive::TriangleStrip;
+use gl::TriangleStrip;
 use wasm_bindgen::prelude::*;
-use wasm_bindgen::JsCast;
-use web_sys;
-use web_sys::WebGl2RenderingContext;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -22,7 +19,7 @@ extern "C" {
 #[wasm_bindgen]
 pub fn main(id: &str) -> Result<(), JsValue> {
 
-    let screen = gl::screen::create_screen(id, 640, 480)?;
+    let screen = gl::create_screen(id, 640, 480)?;
     screen.clear((0.0, 0.0, 0.0, 1.0));
 
     let context = screen.context();
@@ -39,7 +36,7 @@ pub fn main(id: &str) -> Result<(), JsValue> {
             outColor = vec4(1, 0, 0.5, 1);
         }
         "##;
-    let shader = gl::shader::create_shader(&context, vert_shader_source, frag_shader_source)?;
+    let shader = gl::create_shader(&context, vert_shader_source, frag_shader_source)?;
 
     #[rustfmt::skip]
     let vertices = TriangleStrip {
@@ -50,7 +47,7 @@ pub fn main(id: &str) -> Result<(), JsValue> {
         ],
     };
 
-    let triangle = gl::primitive::create_primitive(&context, vertices)?;
+    let triangle = gl::create_primitive(&context, vertices)?;
 
     triangle.draw(&shader);
 
