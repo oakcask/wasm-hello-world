@@ -40,8 +40,14 @@ pub fn main(id: &str) -> Result<(), JsValue> {
         }
         "##;
     let shader = gl::shader::create_shader(&context, vert_shader_source, frag_shader_source)?;
+
+    #[rustfmt::skip]
     let vertices = TriangleStrip {
-        vertices: vec![0.5, 0.5, 0.0, 0.5, -0.5, 0.0, -0.5, 0.5, 0.0],
+        vertices: vec![
+            0.5, 0.5, 0.0,
+            0.5, -0.5, 0.0,
+            -0.5, 0.5, 0.0
+        ],
     };
 
     let triangle = gl::primitive::create_primitive(&context, vertices)?;
