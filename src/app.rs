@@ -86,21 +86,21 @@ impl App {
     }
 
     pub fn start(self) {
-        let mut app = self;
+        let app = self;
         let clo = Closure::once_into_js(move |t: JsValue| {
             let performance_clock_time = t.as_f64().unwrap();
-            if let Err(e) = app.tick(performance_clock_time) {
-                error!("{:?}", e);
-                return;
+            match app.tick(performance_clock_time) {
+                Ok(app) => app.start(),
+                Err(e) => {
+                    error!("{:?}", e);
+                }
             }
-
-            app.start();
         });
 
         Self::request_animation_frame(clo).unwrap();
     }
 
-    fn tick(&mut self, _performance_clock_time: f64) -> Result<(), JsValue> {
+    fn tick(self, _performance_clock_time: f64) -> Result<Self, JsValue> {
         let context = self.gl.context();
 
         let deg = (self.counter % 360) as f32 / 180.0 * 2.0 * std::f32::consts::PI;
@@ -120,7 +120,7 @@ impl App {
         let pv = pv * world;
 
         self.gl.bind_framebuffer(&self.frame_buffer);
-        self.gl.clear((0.0, 0.0, 0.0, 0.0));
+        self.gl.clear((1.0, 0.0, 1.0, 0.0));
         self.gl.clear_depth(0.0);
         self.gl.clear_stencil(1);
 
@@ -139,6 +139,9 @@ impl App {
 
         context.enable(WebGl2RenderingContext::DEPTH_TEST);
         context.enable(WebGl2RenderingContext::CULL_FACE);
+        context.enable(WebGl2RenderingContext::BLEND);
+        context.blend_func(WebGl2RenderingContext::SRC_ALPHA, WebGl2RenderingContext::ONE_MINUS_SRC_ALPHA);
+
         self.cube_shader.enable();
         self.cube_shader.set_uniform_model_view_perspective(&pv);
         self.cube_shader.draw(&self.cube);
@@ -149,17 +152,22 @@ impl App {
 
         context.disable(WebGl2RenderingContext::DEPTH_TEST);
         context.enable(WebGl2RenderingContext::CULL_FACE);
+        context.enable(WebGl2RenderingContext::BLEND);
+        context.blend_func(WebGl2RenderingContext::SRC_ALPHA, WebGl2RenderingContext::ONE_MINUS_SRC_ALPHA);
         
         self.sprite.draw(batch);
 
         context.finish();
 
-        self.counter += 1;
-        if self.counter >= 360 {
-            self.counter = 0;
+        let mut new_counter = self.counter + 1;
+        if new_counter >= 360 {
+            new_counter = 0;
         }
 
-        Ok(())
+        Ok(Self {
+            counter: new_counter,
+            ..self
+        })
     }
 
     fn request_animation_frame(f: JsValue) -> Result<(), JsValue> {
