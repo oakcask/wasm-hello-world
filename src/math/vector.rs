@@ -1,19 +1,11 @@
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
+use crate::{vec3, vec4};
+
 #[derive(Debug, Copy, Clone)]
 pub struct Vector2 {
     pub x: f32,
     pub y: f32,
-}
-
-#[macro_export]
-macro_rules! vec2 {
-    ($x:ident, $y:ident) => {
-        Vector2 { x: $x, y: $y }
-    };
-    ($x:expr, $y:expr) => {
-        Vector2 { x: $x, y: $y }
-    };
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -24,24 +16,6 @@ pub struct Vector3 {
     pub z: f32,
 }
 
-#[macro_export]
-macro_rules! vec3 {
-    ($x:ident, $y:ident, $z:ident) => {
-        Vector3 {
-            x: $x,
-            y: $y,
-            z: $z,
-        }
-    };
-    ($x:expr, $y:expr, $z:expr) => {
-        Vector3 {
-            x: $x,
-            y: $y,
-            z: $z,
-        }
-    };
-}
-
 #[derive(Debug, Copy, Clone)]
 #[repr(C)]
 pub struct Vector4 {
@@ -49,26 +23,6 @@ pub struct Vector4 {
     pub y: f32,
     pub z: f32,
     pub w: f32,
-}
-
-#[macro_export]
-macro_rules! vec4 {
-    ($x:ident, $y:ident, $z:ident, $w:ident) => {
-        Vector4 {
-            x: $x,
-            y: $y,
-            z: $z,
-            w: $w,
-        }
-    };
-    ($x:expr, $y:expr, $z:expr, $w:expr) => {
-        Vector4 {
-            x: $x,
-            y: $y,
-            z: $z,
-            w: $w,
-        }
-    };
 }
 
 impl From<Vector3> for Vector4 {
@@ -167,4 +121,54 @@ impl Neg for Vector3 {
             vec3!(x, y, z) => vec3!(-x, -y, -z),
         }
     }
+}
+
+mod macros {
+    #[macro_export]
+macro_rules! vec2 {
+    ($x:ident, $y:ident) => {
+        $crate::math::Vector2 { x: $x, y: $y }
+    };
+    ($x:expr, $y:expr) => {
+        $crate::math::Vector2 { x: $x, y: $y }
+    };
+}
+
+#[macro_export]
+macro_rules! vec3 {
+    ($x:ident, $y:ident, $z:ident) => {
+               $crate::math:: Vector3 {
+            x: $x,
+            y: $y,
+            z: $z,
+        }
+    };
+    ($x:expr, $y:expr, $z:expr) => {
+         $crate::math::       Vector3 {
+            x: $x,
+            y: $y,
+            z: $z,
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! vec4 {
+    ($x:ident, $y:ident, $z:ident, $w:ident) => {
+         $crate::math::       Vector4 {
+            x: $x,
+            y: $y,
+            z: $z,
+            w: $w,
+        }
+    };
+    ($x:expr, $y:expr, $z:expr, $w:expr) => {
+         $crate::math::       Vector4 {
+            x: $x,
+            y: $y,
+            z: $z,
+            w: $w,
+        }
+    };
+}
 }

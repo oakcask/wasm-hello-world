@@ -39,6 +39,8 @@ web-sys = { version = "0.3.60", features = [
   'WebGlRenderbuffer',
   'WebGlTexture',
 ] }
+console_log = "1.0.0"
+log = "0.4.21"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.13"

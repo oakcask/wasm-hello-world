@@ -1,15 +1,14 @@
-use std::rc::Rc;
-
 use web_sys::WebGl2RenderingContext;
 use web_sys::WebGlProgram;
 use web_sys::WebGlShader;
 use web_sys::WebGlVertexArrayObject;
 
-use super::math::Matrix4;
-use super::Screen;
+use crate::error::Error;
+use crate::math::Matrix4;
+use super::GL;
 
 pub struct Shader {
-    screen: Rc<Screen>,
+    gl: GL,
     program: WebGlProgram,
     _vertex_shader: WebGlShader,
     _fragment_shader: WebGlShader,
@@ -47,7 +46,7 @@ pub trait Drawable {
 
 impl Shader {
     fn ctx(&self) -> &WebGl2RenderingContext {
-        self.screen.context()
+        self.gl.context()
     }
 
     pub fn draw<T: Drawable>(&self, obj: &T) {
@@ -109,10 +108,10 @@ fn compile_shader(
     ctx: &WebGl2RenderingContext,
     shader_type: u32,
     source: &str,
-) -> Result<WebGlShader, String> {
+) -> Result<WebGlShader, Error> {
     let glshader = ctx
         .create_shader(shader_type)
-        .ok_or_else(|| String::from("createShader failed."))?;
+        .ok_or_else(|| "createShader failed.")?;
 
     ctx.shader_source(&glshader, source);
     ctx.compile_shader(&glshader);
@@ -126,19 +125,19 @@ fn compile_shader(
     } else {
         Err(ctx
             .get_shader_info_log(&glshader)
-            .unwrap_or_else(|| String::from("compleShader failed.")))
+            .unwrap_or_else(|| String::from("compleShader failed.")).into())
     }
 }
 
 pub fn create_shader(
-    screen: &Rc<Screen>,
+    gl: &GL,
     vertex_shader_source: &str,
     fragment_shader_source: &str,
-) -> Result<Shader, String> {
-    let ctx = screen.context();
+) -> Result<Shader, Error> {
+    let ctx = gl.context();
     let program = ctx
         .create_program()
-        .ok_or_else(|| String::from("createProgram failed."))?;
+        .ok_or_else(|| "createProgram failed.")?;
     let vertex_shader = compile_shader(
         ctx,
         WebGl2RenderingContext::VERTEX_SHADER,
@@ -155,7 +154,7 @@ pub fn create_shader(
     ctx.link_program(&program);
 
     Ok(Shader {
-        screen: screen.clone(),
+        gl: gl.clone(),
         program,
         _vertex_shader: vertex_shader,
         _fragment_shader: fragment_shader,

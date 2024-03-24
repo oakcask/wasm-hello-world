@@ -1,6 +1,4 @@
-use crate::mat4;
-
-use super::Matrix4;
+use crate::{mat4, math::Matrix4};
 
 #[test]
 fn test_scaling() {
