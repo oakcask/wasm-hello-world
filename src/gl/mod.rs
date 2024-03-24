@@ -1,6 +1,6 @@
+mod gl;
 mod primitive;
 mod shader;
-mod screen;
+pub use gl::*;
 pub use primitive::*;
 pub use shader::*;
-pub use screen::*;

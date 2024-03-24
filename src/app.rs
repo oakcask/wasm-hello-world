@@ -1,11 +1,11 @@
 use std::rc::Rc;
-use crate::{gl::{self, ColoredSliceTriangleStrip, Primitive, Screen, Shader}, log, vec3, vec4};
+use crate::{gl::{self, ColoredSliceTriangleStrip, Primitive, Shader, GL}, log, vec3, vec4};
 use crate::math::Matrix4;
 use wasm_bindgen::prelude::*;
 use web_sys::WebGl2RenderingContext;
 
 pub struct App {
-    screen: Rc<Screen>,
+    gl: Rc<GL>,
     cube: Primitive,
     cube_shader: Shader,
     counter: i32
@@ -13,9 +13,8 @@ pub struct App {
 
 impl App {
     pub fn init(id: &str) -> Result<App, JsValue> {
-        let screen = Rc::new(gl::create_screen(id)?);
-
-        let context = screen.context();
+        let gl = Rc::new(GL::init(id)?);
+        let context = gl.context();
 
         /*
         // Prepearing Off-screen Buffer
@@ -86,7 +85,7 @@ impl App {
                 outColor = vColor;
             }
             "##;
-        let cube_shader = gl::create_shader(&screen, vert_shader_source, frag_shader_source)?;
+        let cube_shader = gl::create_shader(&gl, vert_shader_source, frag_shader_source)?;
         
         #[rustfmt::skip]
         let cube = [
@@ -167,7 +166,7 @@ impl App {
         */
 
         Ok(App {
-            screen,
+            gl,
             cube,
             cube_shader,
             counter: 0
@@ -190,7 +189,7 @@ impl App {
     }
 
     fn tick(&mut self, _performance_clock_time: f64) -> Result<(), JsValue> {
-        let context = self.screen.context();
+        let context = self.gl.context();
 
         let deg = (self.counter % 360) as f32 / 180.0 * 2.0 * std::f32::consts::PI;
 
@@ -200,7 +199,7 @@ impl App {
 
         let fov_y = 45.0/180.0 * std::f32::consts::PI;
         let pv = 
-            Matrix4::perspective_fov(fov_y, self.screen.aspect_ratio(), 0.1, 5000.0) *
+            Matrix4::perspective_fov(fov_y, self.gl.aspect_ratio(), 0.1, 5000.0) *
             Matrix4::look_at(
                 vec3!(0.0, 0.0, 10.0),
                 vec3!(0.0, 0.0, 0.0),
@@ -209,7 +208,7 @@ impl App {
         let pv = pv * world;
 
 
-        self.screen.clear((0.0, 0.0, 0.0, 1.0));
+        self.gl.clear((0.0, 0.0, 0.0, 1.0));
         context.enable(WebGl2RenderingContext::DEPTH_TEST);
         context.enable(WebGl2RenderingContext::CULL_FACE);
         self.cube_shader.enable();

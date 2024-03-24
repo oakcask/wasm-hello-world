@@ -6,10 +6,10 @@ use web_sys::WebGlShader;
 use web_sys::WebGlVertexArrayObject;
 
 use crate::math::Matrix4;
-use super::Screen;
+use super::GL;
 
 pub struct Shader {
-    screen: Rc<Screen>,
+    gl: Rc<GL>,
     program: WebGlProgram,
     _vertex_shader: WebGlShader,
     _fragment_shader: WebGlShader,
@@ -47,7 +47,7 @@ pub trait Drawable {
 
 impl Shader {
     fn ctx(&self) -> &WebGl2RenderingContext {
-        self.screen.context()
+        self.gl.context()
     }
 
     pub fn draw<T: Drawable>(&self, obj: &T) {
@@ -131,11 +131,11 @@ fn compile_shader(
 }
 
 pub fn create_shader(
-    screen: &Rc<Screen>,
+    gl: &Rc<GL>,
     vertex_shader_source: &str,
     fragment_shader_source: &str,
 ) -> Result<Shader, String> {
-    let ctx = screen.context();
+    let ctx = gl.context();
     let program = ctx
         .create_program()
         .ok_or_else(|| String::from("createProgram failed."))?;
@@ -155,7 +155,7 @@ pub fn create_shader(
     ctx.link_program(&program);
 
     Ok(Shader {
-        screen: screen.clone(),
+        gl: gl.clone(),
         program,
         _vertex_shader: vertex_shader,
         _fragment_shader: fragment_shader,
