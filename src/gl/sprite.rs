@@ -1,11 +1,11 @@
-use std::rc::Rc;
 
-use log::{debug, trace};
-use web_sys::{WebGl2RenderingContext, WebGlBuffer, WebGlRenderbuffer, WebGlTexture, WebGlVertexArrayObject};
 
-use crate::{error::Error, mat4, math::{Matrix4, Rectangle, Size, Vector2, Vector3, Vector4}, rect, size, vec2, vec3, vec4};
+use log::trace;
+use web_sys::{WebGl2RenderingContext, WebGlBuffer, WebGlTexture, WebGlVertexArrayObject};
 
-use super::{EphemeralPrimitive, Primitive, Shader, UVMappedSliceTriangleList, UVMappedSliceTriangleStrip, GL};
+use crate::{error::Error, mat4, math::{Matrix4, Rectangle, Size, Vector2, Vector3, Vector4}, vec2, vec4};
+
+use super::{EphemeralPrimitive, Shader, UVMappedSliceTriangleList, GL};
 
 pub struct Sprite {
     gl: GL,
@@ -40,14 +40,14 @@ impl Sprite {
         "##;
 
         let shader = Shader::new(
-            &gl,
+            gl,
             vert_shader_source,
             frag_shader_source
         )?;
         trace!("Sprite shader compiled.");
-        let vbuf = ctx.create_buffer().ok_or_else(|| "glCreateBuffer failed")?;
+        let vbuf = ctx.create_buffer().ok_or("glCreateBuffer failed")?;
         let vao = ctx.create_vertex_array()
-            .ok_or_else(|| "glCreateVertexArray failed")?;
+            .ok_or("glCreateVertexArray failed")?;
 
         Ok(Sprite { gl: gl.clone(), shader, vbuf, vao, screen_size })
     }

@@ -15,8 +15,8 @@ struct Inner {
 
 impl GL {
     pub fn init(element_id: &str) -> Result<GL, Error> {
-        let window = web_sys::window().ok_or_else(|| "global window object not found.")?;
-        let document = window.document().ok_or_else(|| "window document object not found.")?;
+        let window = web_sys::window().ok_or("global window object not found.")?;
+        let document = window.document().ok_or("window document object not found.")?;
 
         let el = document.get_element_by_id(element_id).ok_or_else(|| format!("element with id={} not found.", element_id))?;
         let canvas = el.dyn_into::<HtmlCanvasElement>()
@@ -25,7 +25,7 @@ impl GL {
         let context = canvas
             .get_context("webgl2")
             .map_err(|_| "getContext('webgl2') failed.")?
-            .ok_or_else(|| "getContext('webgl2') returned null.")?
+            .ok_or("getContext('webgl2') returned null.")?
             .dyn_into::<WebGl2RenderingContext>()
             .map_err(|_| "failed to cast into WebGl2RenderingContext")?;
     

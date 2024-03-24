@@ -1,4 +1,4 @@
-use crate::{error::Error, gl::{ColoredSliceTriangleStrip, Primitive, Shader, Sprite, SpriteBatch, GL}, math::Vector4, rect, size, vec3, vec4};
+use crate::{error::Error, gl::{ColoredSliceTriangleStrip, Primitive, Shader, Sprite, SpriteBatch, GL}, rect, size, vec3, vec4};
 use crate::math::Matrix4;
 use log::error;
 use wasm_bindgen::prelude::*;

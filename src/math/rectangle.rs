@@ -1,6 +1,6 @@
 use crate::vec4;
 
-use super::{Vector3, Vector4};
+use super::Vector4;
 
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -63,9 +63,9 @@ impl From<(i32, i32)> for Size {
     }
 }
 
-impl Into<Vector4> for Rectangle {
-    fn into(self) -> Vector4 {
-        match self {
+impl From<Rectangle> for Vector4 {
+    fn from(val: Rectangle) -> Self {
+        match val {
             rect!(x, y, z, w) => vec4!(x as f32, y as f32, z as f32, w as f32)
         }  
     }

@@ -1,5 +1,5 @@
 use web_sys::WebGl2RenderingContext;
-use web_sys::WebGlBuffer;
+
 use web_sys::WebGlProgram;
 use web_sys::WebGlShader;
 use web_sys::WebGlVertexArrayObject;
@@ -59,7 +59,7 @@ impl Shader {
         let ctx = gl.context();
         let program = ctx
             .create_program()
-            .ok_or_else(|| "createProgram failed.")?;
+            .ok_or("createProgram failed.")?;
         let vertex_shader = compile_shader(
             ctx,
             WebGl2RenderingContext::VERTEX_SHADER,
@@ -185,7 +185,7 @@ fn compile_shader(
 ) -> Result<WebGlShader, Error> {
     let glshader = ctx
         .create_shader(shader_type)
-        .ok_or_else(|| "createShader failed.")?;
+        .ok_or("createShader failed.")?;
 
     ctx.shader_source(&glshader, source);
     ctx.compile_shader(&glshader);

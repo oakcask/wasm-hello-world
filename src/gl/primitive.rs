@@ -10,7 +10,7 @@ use crate::math::Vector4;
 use super::DrawArrayMode;
 use super::Drawable;
 
-use super::Shader;
+
 use super::VertexAttribute;
 use super::GL;
 use web_sys::WebGl2RenderingContext;
@@ -139,8 +139,8 @@ pub struct Primitive {
 
 fn transfer<T: VertexAttributeArray>(gl: &GL, data: T, vao: &WebGlVertexArrayObject, buffer: &WebGlBuffer) {
     let ctx = gl.context();
-    ctx.bind_vertex_array(Some(&vao));
-    ctx.bind_buffer(WebGl2RenderingContext::ARRAY_BUFFER, Some(&buffer));
+    ctx.bind_vertex_array(Some(vao));
+    ctx.bind_buffer(WebGl2RenderingContext::ARRAY_BUFFER, Some(buffer));
 
     unsafe {
         let view = js_sys::Float32Array::view(data.as_slice());
@@ -162,10 +162,10 @@ impl Primitive {
         let ctx = gl.context();
         let vao = ctx
             .create_vertex_array()
-            .ok_or_else(|| "createVertexArray failed.")?;
+            .ok_or("createVertexArray failed.")?;
         let buffer = ctx
             .create_buffer()
-            .ok_or_else(|| "createBuffer failed.")?;
+            .ok_or("createBuffer failed.")?;
         let vertex_count = data.vertex_count();
 
         transfer(gl, data, &vao, &buffer);
@@ -227,7 +227,7 @@ pub struct EphemeralPrimitive<'a, T: VertexAttributeArray> {
 impl<'a, T: VertexAttributeArray> EphemeralPrimitive<'a, T> {
     pub fn transfer(gl: &GL, data: T, vao: &'a WebGlVertexArrayObject, buffer: &'a WebGlBuffer) -> Self {
         let vertex_count = data.vertex_count();
-        super::primitive::transfer(&gl, data, &vao, &buffer);
+        super::primitive::transfer(gl, data, vao, buffer);
 
         EphemeralPrimitive {
             vao,
