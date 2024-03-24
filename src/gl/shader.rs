@@ -3,6 +3,7 @@ use web_sys::WebGlProgram;
 use web_sys::WebGlShader;
 use web_sys::WebGlVertexArrayObject;
 
+use crate::error::Error;
 use crate::math::Matrix4;
 use super::GL;
 
@@ -107,10 +108,10 @@ fn compile_shader(
     ctx: &WebGl2RenderingContext,
     shader_type: u32,
     source: &str,
-) -> Result<WebGlShader, String> {
+) -> Result<WebGlShader, Error> {
     let glshader = ctx
         .create_shader(shader_type)
-        .ok_or_else(|| String::from("createShader failed."))?;
+        .ok_or_else(|| "createShader failed.")?;
 
     ctx.shader_source(&glshader, source);
     ctx.compile_shader(&glshader);
@@ -124,7 +125,7 @@ fn compile_shader(
     } else {
         Err(ctx
             .get_shader_info_log(&glshader)
-            .unwrap_or_else(|| String::from("compleShader failed.")))
+            .unwrap_or_else(|| String::from("compleShader failed.")).into())
     }
 }
 
@@ -132,11 +133,11 @@ pub fn create_shader(
     gl: &GL,
     vertex_shader_source: &str,
     fragment_shader_source: &str,
-) -> Result<Shader, String> {
+) -> Result<Shader, Error> {
     let ctx = gl.context();
     let program = ctx
         .create_program()
-        .ok_or_else(|| String::from("createProgram failed."))?;
+        .ok_or_else(|| "createProgram failed.")?;
     let vertex_shader = compile_shader(
         ctx,
         WebGl2RenderingContext::VERTEX_SHADER,

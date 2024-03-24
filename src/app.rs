@@ -1,4 +1,4 @@
-use crate::{gl::{self, ColoredSliceTriangleStrip, Primitive, Shader, GL}, log, vec3, vec4};
+use crate::{error::Error, gl::{self, ColoredSliceTriangleStrip, Primitive, Shader, GL}, log, vec3, vec4};
 use crate::math::Matrix4;
 use wasm_bindgen::prelude::*;
 use web_sys::WebGl2RenderingContext;
@@ -11,7 +11,7 @@ pub struct App {
 }
 
 impl App {
-    pub fn init(id: &str) -> Result<App, JsValue> {
+    pub fn init(id: &str) -> Result<App, Error> {
         let gl = GL::init(id)?;
         let context = gl.context();
 

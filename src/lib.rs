@@ -2,6 +2,7 @@ mod gl;
 mod app;
 use app::App;
 mod math;
+mod error;
 use wasm_bindgen::prelude::*;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -28,9 +29,11 @@ pub fn set_panic_hook() {
 }
 
 #[wasm_bindgen]
-pub fn main(id: &str) -> Result<(), JsValue> {
+pub fn main(id: &str) -> Result<(), JsError> {
     let app = App::init(id)?;
+
     set_panic_hook();
+
     app.start();
 
     Ok(())

@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use web_sys::{HtmlCanvasElement, WebGl2RenderingContext};
 use wasm_bindgen::JsCast;
-use crate::{math::Vector4, vec4};
+use crate::{error::Error, math::Vector4, vec4};
 
 #[derive(Clone)]
 pub struct GL(Rc<Inner>);
@@ -13,9 +13,9 @@ struct Inner {
 }
 
 impl GL {
-    pub fn init(element_id: &str) -> Result<GL, String> {
-        let window = web_sys::window().ok_or_else(|| String::from("global window object not found."))?;
-        let document = window.document().ok_or_else(|| String::from("window document object not found."))?;
+    pub fn init(element_id: &str) -> Result<GL, Error> {
+        let window = web_sys::window().ok_or_else(|| "global window object not found.")?;
+        let document = window.document().ok_or_else(|| "window document object not found.")?;
 
         let el = document.get_element_by_id(element_id).ok_or_else(|| format!("element with id={} not found.", element_id))?;
         let canvas = el.dyn_into::<HtmlCanvasElement>()
@@ -23,10 +23,10 @@ impl GL {
 
         let context = canvas
             .get_context("webgl2")
-            .map_err(|_| String::from("getContext('webgl2') failed."))?
-            .ok_or_else(|| String::from("getContext('webgl2') returned null."))?
+            .map_err(|_| "getContext('webgl2') failed.")?
+            .ok_or_else(|| "getContext('webgl2') returned null.")?
             .dyn_into::<WebGl2RenderingContext>()
-            .map_err(|_| String::from("failed to cast into WebGl2RenderingContext"))?;
+            .map_err(|_| "failed to cast into WebGl2RenderingContext")?;
 
         Ok(GL(
             Rc::new(Inner { element: canvas, context })
