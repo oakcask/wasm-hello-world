@@ -1,59 +1,24 @@
-use crate::{error::Error, gl::{ColoredSliceTriangleStrip, Primitive, Shader, Sprite, SpriteBatch, GL}, rect, size, vec3, vec4};
+use crate::{error::Error, gl::{ColoredSliceTriangleStrip, FrameBuffer, Primitive, Shader, Sprite, SpriteBatch, GL}, rect, vec3, vec4};
 use crate::math::Matrix4;
 use log::error;
 use wasm_bindgen::prelude::*;
-use web_sys::{WebGl2RenderingContext, WebGlFramebuffer, WebGlRenderbuffer, WebGlTexture};
+use web_sys::WebGl2RenderingContext;
 
 pub struct App {
     gl: GL,
     cube: Primitive,
     cube_shader: Shader,
     sprite: Sprite,
-    back_buffer: (WebGlFramebuffer, WebGlRenderbuffer, WebGlTexture),
+    frame_buffer: FrameBuffer,
     counter: i32
 }
 
 impl App {
     pub fn init(id: &str) -> Result<App, Error> {
         let gl = GL::init(id)?;
-        let context = gl.context();
 
         // Prepearing Off-screen Buffer
-        let rbuf = context.create_renderbuffer().ok_or_else(||
-            String::from("createRenderBufferFailed")
-        )?;
-        // We don't need depth and stencil buffer because
-        // we are going to use this off-screen buffer just as image.
-        // context.bind_renderbuffer(WebGl2RenderingContext::RENDERBUFFER, Some(&rbuf));
-        let size!(width, height) = gl.screen_size();
-//        context.renderbuffer_storage(WebGl2RenderingContext::RENDERBUFFER, WebGl2RenderingContext::DEPTH_STENCIL, width, height);
-        let tex = context.create_texture().ok_or_else(|| String::from("createTexture failed"))?;
-        context.bind_texture(WebGl2RenderingContext::TEXTURE_2D, Some(&tex));
-        context.tex_storage_2d(WebGl2RenderingContext::TEXTURE_2D, 1, WebGl2RenderingContext::RGBA32F,
-            width,
-            height);
-        context.tex_parameteri(WebGl2RenderingContext::TEXTURE_2D, WebGl2RenderingContext::TEXTURE_WRAP_S, WebGl2RenderingContext::CLAMP_TO_EDGE as i32);
-        context.tex_parameteri(WebGl2RenderingContext::TEXTURE_2D, WebGl2RenderingContext::TEXTURE_WRAP_T, WebGl2RenderingContext::CLAMP_TO_EDGE as i32);
-        context.tex_parameteri(WebGl2RenderingContext::TEXTURE_2D, WebGl2RenderingContext::TEXTURE_MAG_FILTER, WebGl2RenderingContext::NEAREST as i32);
-        context.tex_parameteri(WebGl2RenderingContext::TEXTURE_2D, WebGl2RenderingContext::TEXTURE_MIN_FILTER, WebGl2RenderingContext::NEAREST as i32);
-
-        let fbuf = context.create_framebuffer().ok_or_else(||
-            String::from("createFramebuffer failed")
-        )?;
-        context.bind_framebuffer(WebGl2RenderingContext::FRAMEBUFFER, Some(&fbuf));
-
-        context.framebuffer_renderbuffer(
-           WebGl2RenderingContext::FRAMEBUFFER,
-            WebGl2RenderingContext::DEPTH_STENCIL_ATTACHMENT,
-            WebGl2RenderingContext::RENDERBUFFER,
-            Some(&rbuf),
-        );
-        context.framebuffer_texture_2d(
-            WebGl2RenderingContext::FRAMEBUFFER,
-            WebGl2RenderingContext::COLOR_ATTACHMENT0,
-            WebGl2RenderingContext::TEXTURE_2D,
-            Some(&tex),
-            0);
+        let frame_buffer = FrameBuffer::new(&gl, gl.screen_size())?;
 
         let vert_shader_source = r##"#version 300 es
             in vec4 position;
@@ -115,7 +80,7 @@ impl App {
             cube,
             cube_shader,
             sprite,
-            back_buffer: (fbuf, rbuf, tex),
+            frame_buffer,
             counter: 0
         })
     }
@@ -154,9 +119,11 @@ impl App {
 
         let pv = pv * world;
 
-        context.bind_framebuffer(WebGl2RenderingContext::FRAMEBUFFER, Some(&self.back_buffer.0));
-
+        self.gl.bind_framebuffer(&self.frame_buffer);
         self.gl.clear((0.0, 0.0, 0.0, 0.0));
+        self.gl.clear_depth(0.0);
+        self.gl.clear_stencil(1);
+
         context.enable(WebGl2RenderingContext::DEPTH_TEST);
         context.enable(WebGl2RenderingContext::CULL_FACE);
         self.cube_shader.enable();
@@ -165,9 +132,11 @@ impl App {
         self.cube_shader.disable();
         context.finish();
 
-        context.bind_framebuffer(WebGl2RenderingContext::FRAMEBUFFER, None);
-
+        self.gl.bind_framebuffer(self.gl.screen());
         self.gl.clear((0.0, 0.0, 0.0, 1.0));
+        self.gl.clear_depth(0.0);
+        self.gl.clear_stencil(1);
+
         context.enable(WebGl2RenderingContext::DEPTH_TEST);
         context.enable(WebGl2RenderingContext::CULL_FACE);
         self.cube_shader.enable();
@@ -176,7 +145,7 @@ impl App {
         self.cube_shader.disable();
 
         let mut batch = SpriteBatch::new();
-        batch.add(&self.back_buffer.2, vec4!(0.0, 0.0, 1.0, 1.0), rect!(0, 0, 256, 256));
+        batch.add(self.frame_buffer.texture(), vec4!(0.0, 0.0, 1.0, 1.0), rect!(0, 0, 256, 256));
 
         context.disable(WebGl2RenderingContext::DEPTH_TEST);
         context.enable(WebGl2RenderingContext::CULL_FACE);

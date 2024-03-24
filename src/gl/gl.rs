@@ -1,16 +1,28 @@
 use std::rc::Rc;
 
-use log::trace;
+
 use web_sys::{HtmlCanvasElement, WebGl2RenderingContext};
 use wasm_bindgen::JsCast;
 use crate::{error::Error, math::{Size, Vector4}, size, vec4};
 
+use super::Screen;
+
 #[derive(Clone)]
 pub struct GL(Rc<Inner>);
 
+pub struct DefaultScreen {
+}
+
+impl Screen for DefaultScreen {
+    fn frame_buffer(&self) -> Option<&web_sys::WebGlFramebuffer> {
+        None
+    }
+}
+
 struct Inner {
     element: HtmlCanvasElement,
-    context: WebGl2RenderingContext
+    context: WebGl2RenderingContext,
+    screen: DefaultScreen,
 }
 
 impl GL {
@@ -33,7 +45,7 @@ impl GL {
         Self::ensure_extension(&context, "EXT_color_buffer_float")?;
 
         Ok(GL(
-            Rc::new(Inner { element: canvas, context })
+            Rc::new(Inner { element: canvas, context, screen: DefaultScreen{} })
         ))
     }
 
@@ -54,18 +66,34 @@ impl GL {
         self.0.context.clear(WebGl2RenderingContext::COLOR_BUFFER_BIT)
     }
 
+    pub fn clear_stencil(&self, stencil: i32) {
+        self.0.context.clear_stencil(stencil);
+        self.0.context.clear(WebGl2RenderingContext::STENCIL_BUFFER_BIT);
+    }
+
+    pub fn clear_depth(&self, depth: f32) {
+        self.0.context.clear_depth(depth);
+        self.0.context.clear(WebGl2RenderingContext::DEPTH_BITS);
+    }
+
     pub fn context(&self) -> &WebGl2RenderingContext {
         &self.0.context
     }
 
     pub fn screen_size(&self) -> Size { 
-        let r = size!(self.0.element.width() as i32, self.0.element.height() as i32);
-        trace!("GL::screen_size = {:?}", r);
-        r
+        size!(self.0.element.width() as i32, self.0.element.height() as i32)
     }
 
     pub fn screen_aspect_ratio(&self) -> f32 {
         let size!(x, y) = self.screen_size();
         x as f32 / y as f32
+    }
+
+    pub fn screen(&self) -> &DefaultScreen {
+        &self.0.screen
+    }
+
+    pub fn bind_framebuffer(&self, screen: &impl Screen) {
+        self.0.context.bind_framebuffer(WebGl2RenderingContext::FRAMEBUFFER, screen.frame_buffer());
     }
 }

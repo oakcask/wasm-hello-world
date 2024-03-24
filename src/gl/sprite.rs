@@ -71,7 +71,7 @@ impl Sprite {
         let transform = Self::normalizer(self.screen_size);
 
         ctx.disable(WebGl2RenderingContext::DEPTH_TEST);
-        ctx.disable(WebGl2RenderingContext::CULL_FACE);
+        ctx.enable(WebGl2RenderingContext::CULL_FACE);
 
         for (tex, _src, verts) in batch.commands {
             let verts = verts.as_slice();
@@ -137,15 +137,6 @@ impl SpriteBatch {
         let str = vec2!(u2, v2);
         let sbl = vec2!(u1, v1);
         let sbr = vec2!(u2, v1);
-
-        // debug
-        // let n = Sprite::normalizer(size!(1920, 1080));
-        // debug!("{:?} => {:?} @ {:?}", dtl, n * vec3!(dtl.x, dtl.y, 0.0), stl);
-        // debug!("{:?} => {:?} @ {:?}", dtr, n * vec3!(dtr.x, dtr.y, 0.0), str);
-        // debug!("{:?} => {:?} @ {:?}", dbl, n * vec3!(dbl.x, dbl.y, 0.0), sbl);
-        // debug!("{:?} => {:?} @ {:?}", dbr, n * vec3!(dbr.x, dbr.y, 0.0), sbr);
-        // panic!("stop");        
-        
 
         // we are going to invert y-position (see normalizer()),
         // so rendered rectangle will face backward.
