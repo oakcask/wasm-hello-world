@@ -3,6 +3,7 @@ mod app;
 use app::App;
 mod math;
 mod error;
+use error::Error;
 use wasm_bindgen::prelude::*;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -10,12 +11,6 @@ use wasm_bindgen::prelude::*;
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
-
-#[wasm_bindgen]
-extern "C" {
-    #[wasm_bindgen(js_namespace = console)]
-    fn log(s: &str);
-}
 
 pub fn set_panic_hook() {
     // When the `console_error_panic_hook` feature is enabled, we can call the
@@ -30,11 +25,11 @@ pub fn set_panic_hook() {
 
 #[wasm_bindgen]
 pub fn main(id: &str) -> Result<(), JsError> {
-    let app = App::init(id)?;
 
     set_panic_hook();
+    console_log::init_with_level(log::Level::Trace).map_err(|e| Error::from(e.to_string()))?;
 
-    app.start();
+    App::init(id)?.start();
 
     Ok(())
 }

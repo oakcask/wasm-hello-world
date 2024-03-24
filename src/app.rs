@@ -1,5 +1,6 @@
-use crate::{error::Error, gl::{self, ColoredSliceTriangleStrip, Primitive, Shader, GL}, log, vec3, vec4};
+use crate::{error::Error, gl::{self, ColoredSliceTriangleStrip, Primitive, Shader, GL}, vec3, vec4};
 use crate::math::Matrix4;
+use log::error;
 use wasm_bindgen::prelude::*;
 use web_sys::WebGl2RenderingContext;
 
@@ -177,7 +178,7 @@ impl App {
         let clo = Closure::once_into_js(move |t: JsValue| {
             let performance_clock_time = t.as_f64().unwrap();
             if let Err(e) = app.tick(performance_clock_time) {
-                log(&format!("{:?}", e));
+                error!("{:?}", e);
                 return;
             }
 
