@@ -47,12 +47,12 @@ impl GL {
         &self.0.context
     }
 
-    pub fn size(&self) -> (u32, u32) { 
+    pub fn screen_size(&self) -> (u32, u32) { 
         (self.0.element.width(), self.0.element.height())
     }
 
-    pub fn aspect_ratio(&self) -> f32 {
-        let (x, y) = self.size();
+    pub fn screen_aspect_ratio(&self) -> f32 {
+        let (x, y) = self.screen_size();
         x as f32 / y as f32
     }
 }

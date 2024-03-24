@@ -199,7 +199,7 @@ impl App {
 
         let fov_y = 45.0/180.0 * std::f32::consts::PI;
         let pv = 
-            Matrix4::perspective_fov(fov_y, self.gl.aspect_ratio(), 0.1, 5000.0) *
+            Matrix4::perspective_fov(fov_y, self.gl.screen_aspect_ratio(), 0.1, 5000.0) *
             Matrix4::look_at(
                 vec3!(0.0, 0.0, 10.0),
                 vec3!(0.0, 0.0, 0.0),
