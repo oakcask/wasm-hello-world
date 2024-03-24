@@ -1,11 +1,10 @@
-use std::rc::Rc;
 use crate::{gl::{self, ColoredSliceTriangleStrip, Primitive, Shader, GL}, log, vec3, vec4};
 use crate::math::Matrix4;
 use wasm_bindgen::prelude::*;
 use web_sys::WebGl2RenderingContext;
 
 pub struct App {
-    gl: Rc<GL>,
+    gl: GL,
     cube: Primitive,
     cube_shader: Shader,
     counter: i32
@@ -13,7 +12,7 @@ pub struct App {
 
 impl App {
     pub fn init(id: &str) -> Result<App, JsValue> {
-        let gl = Rc::new(GL::init(id)?);
+        let gl = GL::init(id)?;
         let context = gl.context();
 
         /*

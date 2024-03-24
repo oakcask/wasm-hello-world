@@ -1,8 +1,13 @@
+use std::rc::Rc;
+
 use web_sys::{HtmlCanvasElement, WebGl2RenderingContext};
 use wasm_bindgen::JsCast;
 use crate::{math::Vector4, vec4};
 
-pub struct GL {
+#[derive(Clone)]
+pub struct GL(Rc<Inner>);
+
+struct Inner {
     element: HtmlCanvasElement,
     context: WebGl2RenderingContext
 }
@@ -23,28 +28,27 @@ impl GL {
             .dyn_into::<WebGl2RenderingContext>()
             .map_err(|_| String::from("failed to cast into WebGl2RenderingContext"))?;
 
-        Ok(GL{
-            element: canvas,
-            context,
-        })
+        Ok(GL(
+            Rc::new(Inner { element: canvas, context })
+        ))
     }
     
     pub fn clear<Color>(&self, color: Color)
         where Color: Into<Vector4> {
         match color.into() {
             vec4!(r, g, b, a) => {
-                self.context.clear_color(r, g, b, a)
+                self.0.context.clear_color(r, g, b, a)
             }
         }
-        self.context.clear(WebGl2RenderingContext::COLOR_BUFFER_BIT)
+        self.0.context.clear(WebGl2RenderingContext::COLOR_BUFFER_BIT)
     }
 
     pub fn context(&self) -> &WebGl2RenderingContext {
-        &self.context
+        &self.0.context
     }
 
     pub fn size(&self) -> (u32, u32) { 
-        (self.element.width(), self.element.height())
+        (self.0.element.width(), self.0.element.height())
     }
 
     pub fn aspect_ratio(&self) -> f32 {

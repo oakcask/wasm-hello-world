@@ -1,5 +1,3 @@
-use std::rc::Rc;
-
 use web_sys::WebGl2RenderingContext;
 use web_sys::WebGlProgram;
 use web_sys::WebGlShader;
@@ -9,7 +7,7 @@ use crate::math::Matrix4;
 use super::GL;
 
 pub struct Shader {
-    gl: Rc<GL>,
+    gl: GL,
     program: WebGlProgram,
     _vertex_shader: WebGlShader,
     _fragment_shader: WebGlShader,
@@ -131,7 +129,7 @@ fn compile_shader(
 }
 
 pub fn create_shader(
-    gl: &Rc<GL>,
+    gl: &GL,
     vertex_shader_source: &str,
     fragment_shader_source: &str,
 ) -> Result<Shader, String> {
