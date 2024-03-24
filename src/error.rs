@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use wasm_bindgen::JsValue;
+
 #[derive(Debug)]
 pub struct Error {
     message: String
@@ -14,6 +16,12 @@ impl From<&str> for Error {
 impl From<String> for Error {
     fn from(value: String) -> Self {
         Error { message: value }
+    }
+}
+
+impl From<JsValue> for Error {
+    fn from(value: JsValue) -> Self {
+        Error { message: format!("{:?}", value) }
     }
 }
 

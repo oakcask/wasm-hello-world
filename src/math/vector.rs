@@ -1,14 +1,14 @@
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
-use crate::{vec3, vec4};
+use crate::{vec2, vec3, vec4};
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Vector2 {
     pub x: f32,
     pub y: f32,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 #[repr(C)]
 pub struct Vector3 {
     pub x: f32,
@@ -16,13 +16,21 @@ pub struct Vector3 {
     pub z: f32,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 #[repr(C)]
 pub struct Vector4 {
     pub x: f32,
     pub y: f32,
     pub z: f32,
     pub w: f32,
+}
+
+impl From<Vector2> for Vector3 {
+    fn from(value: Vector2) -> Self {
+        match value {
+            vec2!(x, y) => vec3!(x, y, 0.0)
+        }
+    }
 }
 
 impl From<Vector3> for Vector4 {
