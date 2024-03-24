@@ -2,9 +2,8 @@ use wasm_bindgen::JsCast;
 use web_sys::HtmlCanvasElement;
 use web_sys::WebGl2RenderingContext;
 
+use crate::math::Vector4;
 use crate::vec4;
-
-use super::math::Vector4;
 
 pub struct Screen {
     element: HtmlCanvasElement,

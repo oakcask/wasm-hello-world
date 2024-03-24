@@ -1,6 +1,7 @@
 use std::{mem::size_of, ops::Mul};
 
 use crate::vec3;
+use crate::mat4;
 
 use super::Vector3;
 
@@ -23,32 +24,6 @@ pub struct Matrix4 {
     pub m42: f32,
     pub m43: f32,
     pub m44: f32,
-}
-
-#[macro_export]
-macro_rules! mat4 {
-    (
-        $a11:ident, $a12:ident, $a13:ident, $a14:ident,
-        $a21:ident, $a22:ident, $a23:ident, $a24:ident,
-        $a31:ident, $a32:ident, $a33:ident, $a34:ident,
-        $a41:ident, $a42:ident, $a43:ident, $a44:ident
-    ) => (Matrix4 {
-        m11: $a11, m12: $a12, m13: $a13, m14: $a14,
-        m21: $a21, m22: $a22, m23: $a23, m24: $a24,
-        m31: $a31, m32: $a32, m33: $a33, m34: $a34,
-        m41: $a41, m42: $a42, m43: $a43, m44: $a44
-    });
-    (
-        $a11:expr, $a12:expr, $a13:expr, $a14:expr,
-        $a21:expr, $a22:expr, $a23:expr, $a24:expr,
-        $a31:expr, $a32:expr, $a33:expr, $a34:expr,
-        $a41:expr, $a42:expr, $a43:expr, $a44:expr
-    ) => (Matrix4 {
-        m11: $a11, m12: $a12, m13: $a13, m14: $a14,
-        m21: $a21, m22: $a22, m23: $a23, m24: $a24,
-        m31: $a31, m32: $a32, m33: $a33, m34: $a34,
-        m41: $a41, m42: $a42, m43: $a43, m44: $a44
-    })
 }
 
 impl PartialEq for Matrix4 {
@@ -239,4 +214,30 @@ impl Matrix4 {
             0.0, 0.0, -1.0, 0.0
         )
     } 
+}
+
+#[macro_export]
+macro_rules! mat4 {
+    (
+        $a11:ident, $a12:ident, $a13:ident, $a14:ident,
+        $a21:ident, $a22:ident, $a23:ident, $a24:ident,
+        $a31:ident, $a32:ident, $a33:ident, $a34:ident,
+        $a41:ident, $a42:ident, $a43:ident, $a44:ident
+    ) => ($crate::math::Matrix4 {
+        m11: $a11, m12: $a12, m13: $a13, m14: $a14,
+        m21: $a21, m22: $a22, m23: $a23, m24: $a24,
+        m31: $a31, m32: $a32, m33: $a33, m34: $a34,
+        m41: $a41, m42: $a42, m43: $a43, m44: $a44
+    });
+    (
+        $a11:expr, $a12:expr, $a13:expr, $a14:expr,
+        $a21:expr, $a22:expr, $a23:expr, $a24:expr,
+        $a31:expr, $a32:expr, $a33:expr, $a34:expr,
+        $a41:expr, $a42:expr, $a43:expr, $a44:expr
+    ) => ($crate::math::Matrix4 {
+        m11: $a11, m12: $a12, m13: $a13, m14: $a14,
+        m21: $a21, m22: $a22, m23: $a23, m24: $a24,
+        m31: $a31, m32: $a32, m33: $a33, m34: $a34,
+        m41: $a41, m42: $a42, m43: $a43, m44: $a44
+    })
 }

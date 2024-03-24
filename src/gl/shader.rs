@@ -5,7 +5,7 @@ use web_sys::WebGlProgram;
 use web_sys::WebGlShader;
 use web_sys::WebGlVertexArrayObject;
 
-use super::math::Matrix4;
+use crate::math::Matrix4;
 use super::Screen;
 
 pub struct Shader {

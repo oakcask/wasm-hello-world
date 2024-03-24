@@ -2,10 +2,9 @@
 use std::mem::size_of;
 use std::mem::size_of_val;
 
-
-use super::math::Vector2;
-use super::math::Vector3;
-use super::math::Vector4;
+use crate::math::Vector2;
+use crate::math::Vector3;
+use crate::math::Vector4;
 use super::DrawArrayMode;
 use super::Drawable;
 

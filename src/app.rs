@@ -1,5 +1,6 @@
 use std::rc::Rc;
-use crate::{gl::{self, math::{Matrix4, Vector3, Vector4}, ColoredSliceTriangleStrip, Primitive, Screen, Shader}, log, vec3, vec4};
+use crate::{gl::{self, ColoredSliceTriangleStrip, Primitive, Screen, Shader}, log, vec3, vec4};
+use crate::math::Matrix4;
 use wasm_bindgen::prelude::*;
 use web_sys::WebGl2RenderingContext;
 
